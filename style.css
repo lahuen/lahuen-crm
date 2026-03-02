@@ -69,9 +69,17 @@ body {
 }
 
 .preview-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
   font-size: var(--text-lg);
   font-weight: var(--weight-semi);
   color: var(--color-accent);
+}
+.nav-logo {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
 }
 .preview-brand span {
   font-weight: var(--weight-normal);
