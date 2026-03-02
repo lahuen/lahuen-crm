@@ -269,16 +269,27 @@ function verifyGoogleAuth(credential: string): any {
 
     const config = getSettings();
 
-    // Verify ID token via Google's tokeninfo endpoint
-    const response = UrlFetchApp.fetch(
-      "https://oauth2.googleapis.com/tokeninfo?id_token=" + credential
-    );
-    const tokenPayload = JSON.parse(response.getContentText());
+    // Decode JWT payload (header.payload.signature)
+    const parts = credential.split(".");
+    if (parts.length !== 3) {
+      return { authorized: false, error: "Token inválido." };
+    }
+
+    const decoded = Utilities.newBlob(
+      Utilities.base64DecodeWebSafe(parts[1])
+    ).getDataAsString();
+    const tokenPayload = JSON.parse(decoded);
 
     const email = (tokenPayload.email || "").toLowerCase().trim();
 
-    if (!tokenPayload.email_verified || tokenPayload.email_verified === "false") {
+    if (!tokenPayload.email_verified) {
       return { authorized: false, error: "Email no verificado." };
+    }
+
+    // Check token expiry
+    const now = Math.floor(Date.now() / 1000);
+    if (tokenPayload.exp && tokenPayload.exp < now) {
+      return { authorized: false, error: "Token expirado." };
     }
 
     const authorized = config.AUTHORIZED_EMAILS.some(
