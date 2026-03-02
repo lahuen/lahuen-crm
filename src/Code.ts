@@ -132,12 +132,17 @@ function handleApiRequest(e: any): GoogleAppsScript.Content.TextOutput {
 
   const action = (params["action"] || postData.action || "").trim();
   const token = (params["token"] || postData.token || "").trim();
+  const payload = (e.postData && e.postData.contents) ? postData : params;
+
+  // googleAuth does not require API token — it validates via Google ID token
+  if (action === "googleAuth") {
+    const credential = params["credential"] || postData.credential || "";
+    return createJsonResponse(verifyGoogleAuth(credential));
+  }
 
   if (!token || token !== config.API_TOKEN.trim()) {
     return createJsonResponse({ error: "Unauthorized: Invalid API Token." });
   }
-
-  const payload = (e.postData && e.postData.contents) ? postData : params;
 
   try {
     let result: any;
@@ -251,6 +256,42 @@ function updateProspect(payload: ProspectPayload): string {
     return "Prospecto actualizado.";
   } catch (err) {
     return `Error: ${String(err)}`;
+  }
+}
+
+// ── Google Auth ───────────────────────────────────────────────────────────────
+
+function verifyGoogleAuth(credential: string): any {
+  try {
+    if (!credential) {
+      return { authorized: false, error: "No se recibió credencial de Google." };
+    }
+
+    const config = getSettings();
+
+    // Verify ID token via Google's tokeninfo endpoint
+    const response = UrlFetchApp.fetch(
+      "https://oauth2.googleapis.com/tokeninfo?id_token=" + credential
+    );
+    const tokenPayload = JSON.parse(response.getContentText());
+
+    const email = (tokenPayload.email || "").toLowerCase().trim();
+
+    if (!tokenPayload.email_verified || tokenPayload.email_verified === "false") {
+      return { authorized: false, error: "Email no verificado." };
+    }
+
+    const authorized = config.AUTHORIZED_EMAILS.some(
+      (e: string) => e.toLowerCase().trim() === email
+    );
+
+    if (!authorized) {
+      return { authorized: false, error: "Tu email (" + email + ") no tiene permisos para acceder." };
+    }
+
+    return { authorized: true, email: email, token: config.API_TOKEN };
+  } catch (err) {
+    return { authorized: false, error: "Error verificando credenciales: " + String(err) };
   }
 }
 

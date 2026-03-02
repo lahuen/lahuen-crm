@@ -378,6 +378,54 @@ tbody tr:hover { background: var(--color-accent-muted); }
 }
 .empty-state p { font-size: var(--text-sm); margin-top: var(--sp-2); }
 
+/* ── Login ───────────────────────────────────────────────────────────────── */
+
+.login-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--sp-4);
+}
+.login-card {
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+}
+.login-logo {
+  height: 64px;
+  width: auto;
+  margin-bottom: var(--sp-4);
+}
+.login-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semi);
+  color: var(--color-accent);
+  margin-bottom: var(--sp-1);
+}
+.login-title span {
+  font-weight: var(--weight-normal);
+  color: var(--color-secondary);
+}
+.login-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-secondary);
+  margin-bottom: var(--sp-5);
+}
+.login-footnote {
+  font-size: var(--text-xs);
+  color: var(--color-tertiary);
+  margin-top: var(--sp-4);
+}
+
+/* ── Nav User ────────────────────────────────────────────────────────────── */
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
