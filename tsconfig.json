@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "CommonJS",
+    "module": "None",
     "lib": ["ES2019"],
     "strict": true,
+    "alwaysStrict": false,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "outDir": "./build",
