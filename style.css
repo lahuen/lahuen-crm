@@ -75,16 +75,18 @@ body {
   font-size: var(--text-lg);
   font-weight: var(--weight-semi);
   color: var(--color-accent);
+  white-space: nowrap;
 }
 .nav-logo {
-  height: 28px;
+  height: 36px;
   width: auto;
   object-fit: contain;
 }
 .preview-brand span {
-  font-weight: var(--weight-normal);
+  font-weight: var(--weight-medium);
   color: var(--color-secondary);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
+  margin-left: 2px;
 }
 
 .tab-group { display: flex; gap: var(--sp-1); background: var(--color-bg); border-radius: var(--radius-pill); padding: 3px; }
