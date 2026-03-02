@@ -13,7 +13,7 @@ jobs:
       - name: Inject Secrets into index.html
         run: |
           sed -i "s|REPLACE_WITH_GAS_URL|${{ secrets.GAS_URL }}|g" index.html
-          sed -i "s|REPLACE_WITH_API_TOKEN|${{ secrets.API_TOKEN }}|g" index.html
+          sed -i "s|REPLACE_WITH_GOOGLE_CLIENT_ID|${{ secrets.GOOGLE_CLIENT_ID }}|g" index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
