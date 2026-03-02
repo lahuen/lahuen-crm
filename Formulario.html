@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lahuen CRM — Nuevo Prospecto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <?!= include('theme') ?>
+</head>
+<body>
+
+  <div class="preview-nav">
+    <div class="preview-brand">Lahuen <span>CRM</span></div>
+    <div class="tab-group">
+      <button class="tab-btn" onclick="window.top.location.href='<?!= getScriptUrl() ?>?p=Dashboard'">Dashboard</button>
+      <button class="tab-btn active">Nuevo</button>
+    </div>
+  </div>
+
+  <div class="page-narrow" style="margin-top:var(--sp-4);">
+    <div style="margin-bottom:var(--sp-6);">
+      <h1 class="text-title">Nuevo prospecto</h1>
+      <p class="text-secondary" style="font-size:var(--text-sm);margin-top:2px;">Registra un local o contacto comercial.</p>
+    </div>
+
+    <div class="card">
+      <form id="prospectForm" class="flex flex-col gap-4">
+        <div class="form-group">
+          <label class="form-label">Nombre del local *</label>
+          <input type="text" name="local" class="form-control" placeholder="Ej: Restaurante El Roble" required />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Contacto *</label>
+            <input type="text" name="contacto" class="form-control" placeholder="Nombre de la persona" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">WhatsApp *</label>
+            <input type="tel" name="whatsapp" class="form-control" placeholder="5491112345678" required />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Perfil *</label>
+            <select name="perfil" class="form-control" required>
+              <option value="">Seleccionar...</option>
+              <option value="restaurante">Restaurante</option>
+              <option value="hotel">Hotel</option>
+              <option value="bar">Bar</option>
+              <option value="dietetica">Dietetica</option>
+              <option value="revendedor">Revendedor</option>
+              <option value="mercado">Mercado</option>
+              <option value="distribuidor">Distribuidor</option>
+              <option value="feria">Feria</option>
+              <option value="supermercado">Supermercado</option>
+              <option value="comunidad">Comunidad</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Segmento</label>
+            <select name="segmento" class="form-control">
+              <option value="">Seleccionar...</option>
+              <option value="premium">Premium</option>
+              <option value="medio">Medio</option>
+              <option value="volumen">Volumen</option>
+              <option value="corporativo">Corporativo</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Zona *</label>
+            <input type="text" name="zona" class="form-control" placeholder="Ej: Moreno Centro" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Direccion</label>
+            <input type="text" name="direccion" class="form-control" placeholder="Direccion completa" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Productos de interes</label>
+          <input type="text" name="productosInteres" class="form-control" placeholder="lechuga, rucula, albahaca..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas</label>
+          <textarea name="notas" class="form-control" rows="3" placeholder="Comentarios, horarios, etc."></textarea>
+        </div>
+        <button type="button" id="submitBtn" class="btn btn-primary w-full" onclick="submitForm()">Guardar prospecto</button>
+        <div id="status" style="min-height:36px;text-align:center;"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function submitForm() {
+      const f = document.getElementById('prospectForm');
+      const st = document.getElementById('status');
+      if (!f.checkValidity()) { f.reportValidity(); return; }
+
+      st.innerHTML = '<div class="status-msg loading">Guardando...</div>';
+      document.getElementById('submitBtn').disabled = true;
+
+      const payload = {
+        local: f.local.value.trim(),
+        contacto: f.contacto.value.trim(),
+        whatsapp: f.whatsapp.value.trim(),
+        perfil: f.perfil.value,
+        zona: f.zona.value.trim(),
+        segmento: f.segmento.value,
+        direccion: f.direccion.value.trim(),
+        resultado: 'pendiente',
+        productosInteres: f.productosInteres.value.trim(),
+        notas: f.notas.value.trim(),
+        vendedor: Session && Session.getActiveUser ? Session.getActiveUser().getEmail() : ''
+      };
+
+      google.script.run
+        .withSuccessHandler(r => {
+          f.reset();
+          st.innerHTML = '<div class="status-msg success">Prospecto guardado</div>';
+          document.getElementById('submitBtn').disabled = false;
+          setTimeout(() => { window.top.location.href = '<?!= getScriptUrl() ?>?p=Dashboard'; }, 800);
+        })
+        .withFailureHandler(e => {
+          st.innerHTML = '<div class="status-msg error">Error: ' + e.message + '</div>';
+          document.getElementById('submitBtn').disabled = false;
+        })
+        .addProspect(payload);
+    }
+  </script>
+</body>
+</html>
